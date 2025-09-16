@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Trophy, 
@@ -16,6 +16,61 @@ import Card from '../components/UI/Card';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  
+  // Calendar state
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Calendar functions
+  const getMonthName = (date: Date) => {
+    return date.toLocaleString('default', { month: 'long' });
+  };
+  
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+  
+  const getFirstDayOfMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+  
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (direction === 'prev') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+  };
+  
+  // Check if a date is today
+  const isToday = (day: number) => {
+    const today = new Date();
+    return (
+      day === today.getDate() &&
+      currentDate.getMonth() === today.getMonth() &&
+      currentDate.getFullYear() === today.getFullYear()
+    );
+  };
+  
+  // Generate calendar days
+  const generateCalendarDays = () => {
+    const daysInMonth = getDaysInMonth(currentDate);
+    const firstDayOfMonth = getFirstDayOfMonth(currentDate);
+    const days = [];
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push(null);
+    }
+    
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    
+    return days;
+  };
 
   const stats = [
     { label: 'Profile Completion', value: 85, icon: Users, color: 'bg-blue-500' },
@@ -42,16 +97,13 @@ const Dashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back {user?.name || 'Taylor'} 👋
+            Welcome back {user?.name || 'Deepak'} 👋
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">
             Track your progress and achieve your career goals
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Search courses</p>
-          </div>
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
             <img 
               src={user?.profileImage || "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400"} 
@@ -73,7 +125,7 @@ const Dashboard: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="p-6">
+              <Card className="p-6 min-h-[115px]">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
@@ -86,10 +138,10 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 {stat.label.includes('Completion') && (
-                  <div className="mt-4">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="mt-1">
+                    <div className="w-3/4 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                       <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
                         style={{ width: `${stat.value}%` }}
                       />
                     </div>
@@ -111,8 +163,8 @@ const Dashboard: React.FC = () => {
               </h2>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500">Active</span>
-                <button className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                  <Plus size={14} className="text-white" />
+                <button className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                  <Plus size={16} className="text-white" />
                 </button>
               </div>
             </div>
@@ -178,7 +230,7 @@ const Dashboard: React.FC = () => {
                 <Trophy size={24} />
               </div>
             </div>
-            <button className="w-full bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg font-medium transition-colors">
+            <button className="w-full h-12 bg-white/20 hover:bg-white/30 text-white rounded-lg font-medium transition-colors flex items-center justify-center">
               Get Access
             </button>
           </Card>
@@ -186,22 +238,38 @@ const Dashboard: React.FC = () => {
           {/* Calendar */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">August, 2024</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">{getMonthName(currentDate)}, {currentDate.getFullYear()}</h3>
               <div className="flex space-x-2">
-                <button className="text-gray-400 hover:text-gray-600">&lt;</button>
-                <button className="text-gray-400 hover:text-gray-600">&gt;</button>
+                <button 
+                  onClick={() => navigateMonth('prev')}
+                  className="w-10 h-10 text-gray-400 hover:text-gray-600 rounded-lg flex items-center justify-center"
+                >
+                  &lt;
+                </button>
+                <button 
+                  onClick={() => navigateMonth('next')}
+                  className="w-10 h-10 text-gray-400 hover:text-gray-600 rounded-lg flex items-center justify-center"
+                >
+                  &gt;
+                </button>
               </div>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-sm">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
                 <div key={day} className="p-2 text-gray-500 font-medium">{day}</div>
               ))}
-              {Array.from({ length: 31 }, (_, i) => (
+              {generateCalendarDays().map((day, index) => (
                 <div 
-                  key={i + 1} 
-                  className={`p-2 rounded ${i + 1 === 17 ? 'bg-green-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                  key={index} 
+                  className={`p-2 rounded ${
+                    day && isToday(day) 
+                      ? 'bg-blue-500 text-white font-bold' 
+                      : day 
+                        ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' 
+                        : 'text-transparent'
+                  }`}
                 >
-                  {i + 1}
+                  {day || ''}
                 </div>
               ))}
             </div>

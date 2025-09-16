@@ -53,14 +53,14 @@ const Sidebar: React.FC = () => {
           x: 0
         }}
         className={`
-          fixed left-0 top-0 h-full bg-gray-900 text-white z-40 transition-all duration-300
+          fixed left-2 top-5 right-2 bottom-5 bg-gray-900 text-white z-40 transition-all duration-300 border margin-2 [border-radius:2rem]
           ${isCollapsed ? 'lg:w-20' : 'lg:w-70'}
           ${isCollapsed ? 'w-0 -translate-x-full lg:translate-x-0' : 'w-70'}
         `}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-gray-800">
-          <div className="flex items-center space-x-3">
+        <div className="px-12 py-6 border-b border-gray-800">
+          <div className="flex items-center justify-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Zap size={24} className="text-white" />
             </div>
@@ -88,10 +88,10 @@ const Sidebar: React.FC = () => {
                   <Link
                     to={item.path}
                     className={`
-                      flex items-center px-4 py-3 rounded-lg transition-all duration-200
+                      flex items-center px-12 py-3 rounded-3xl transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02] active:translate-y-0 active:scale-[0.98]
                       ${isActive 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white transition-all duration-500 ease-out' 
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-500 ease-out'
                       }
                     `}
                   >
@@ -113,10 +113,10 @@ const Sidebar: React.FC = () => {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-gray-800">
+        <div className="px-12 border-t rounded-3xl border-gray-800">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-all duration-200"
+            className="flex items-center w-full px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-3xl transition-all duration-200"
           >
             <LogOut size={20} />
             {!isCollapsed && (
@@ -136,14 +136,14 @@ const Sidebar: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="m-4 p-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg"
+            className="m-4 p-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl"
           >
             <div className="text-center">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Zap size={24} className="text-white" />
               </div>
               <h4 className="font-semibold mb-2">Download our mobile app</h4>
-              <button className="w-full bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+              <button className="w-full bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-3xl text-sm transition-colors">
                 Get Access
               </button>
             </div>

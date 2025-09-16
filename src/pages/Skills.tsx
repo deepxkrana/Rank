@@ -21,6 +21,8 @@ const Skills: React.FC = () => {
 
   const [newSkill, setNewSkill] = useState({ name: '', level: 50, category: 'Programming' });
   const [showAddSkill, setShowAddSkill] = useState(false);
+  const [editingSkillId, setEditingSkillId] = useState<number | null>(null);
+  const [editingSkillData, setEditingSkillData] = useState({ name: '', level: 50, category: 'Programming' });
 
   const categories = ['Programming', 'Frontend', 'Backend', 'Database', 'Cloud', 'Mobile', 'DevOps'];
 
@@ -39,6 +41,32 @@ const Skills: React.FC = () => {
 
   const handleDeleteSkill = (id: number) => {
     setSkills(skills.filter(skill => skill.id !== id));
+  };
+
+  const handleEditSkill = (skill: any) => {
+    setEditingSkillId(skill.id);
+    setEditingSkillData({
+      name: skill.name,
+      level: skill.level,
+      category: skill.category
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (editingSkillId !== null && editingSkillData.name.trim()) {
+      setSkills(skills.map(skill => 
+        skill.id === editingSkillId 
+          ? { ...skill, ...editingSkillData }
+          : skill
+      ));
+      setEditingSkillId(null);
+      setEditingSkillData({ name: '', level: 50, category: 'Programming' });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSkillId(null);
+    setEditingSkillData({ name: '', level: 50, category: 'Programming' });
   };
 
   const getLevelColor = (level: number) => {
@@ -140,35 +168,112 @@ const Skills: React.FC = () => {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{skill.name}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{skill.category}</p>
+                  {editingSkillId === skill.id ? (
+                    // Edit Mode
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={editingSkillData.name}
+                            onChange={(e) => setEditingSkillData({ ...editingSkillData, name: e.target.value })}
+                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold"
+                          />
+                          <select
+                            value={editingSkillData.category}
+                            onChange={(e) => setEditingSkillData({ ...editingSkillData, category: e.target.value })}
+                            className="w-full mt-1 px-2 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          >
+                            {categories.map(category => (
+                              <option key={category} value={category}>{category}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="flex space-x-2 ml-2">
+                          <button 
+                            onClick={handleSaveEdit}
+                            className="text-green-500 hover:text-green-600 transition-colors"
+                            title="Save"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                              <polyline points="17 21 17 13 7 13 7 21"/>
+                              <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                          </button>
+                          <button 
+                            onClick={handleCancelEdit}
+                            className="text-red-500 hover:text-red-600 transition-colors"
+                            title="Cancel"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="15" y1="9" x2="9" y2="15"/>
+                              <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600 dark:text-gray-300">Proficiency</span>
+                          <span className="font-medium text-gray-900 dark:text-white">{editingSkillData.level}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={editingSkillData.level}
+                          onChange={(e) => setEditingSkillData({ ...editingSkillData, level: parseInt(e.target.value) })}
+                          className="w-full"
+                        />
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`${getLevelColor(editingSkillData.level)} h-2 rounded-full transition-all duration-300`}
+                            style={{ width: `${editingSkillData.level}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex space-x-2">
-                      <button className="text-gray-400 hover:text-blue-500 transition-colors">
-                        <Edit size={16} />
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteSkill(skill.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-300">Proficiency</span>
-                      <span className="font-medium text-gray-900 dark:text-white">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className={`${getLevelColor(skill.level)} h-2 rounded-full transition-all duration-300`}
-                        style={{ width: `${skill.level}%` }}
-                      />
-                    </div>
-                  </div>
+                  ) : (
+                    // View Mode
+                    <>
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{skill.name}</h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{skill.category}</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleEditSkill(skill)}
+                            className="text-gray-400 hover:text-blue-500 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteSkill(skill.id)}
+                            className="text-gray-400 hover:text-red-500 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600 dark:text-gray-300">Proficiency</span>
+                          <span className="font-medium text-gray-900 dark:text-white">{skill.level}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`${getLevelColor(skill.level)} h-2 rounded-full transition-all duration-300`}
+                            style={{ width: `${skill.level}%` }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </Card>
               </motion.div>
             ))}
